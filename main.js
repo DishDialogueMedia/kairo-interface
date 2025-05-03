@@ -25,6 +25,18 @@ function appendMessage(sender, message) {
 }
 
 async function fetchKairoResponse(message) {
-  // Placeholder logic — will be replaced by real endpoint later
-  return `[This is a simulated Kairo reply to: "${message}"]`;
+  const response = await fetch("https://script.google.com/macros/s/AKfycbw4vrALR03cyIx_78GT8HubKPa6QZP0stk-zo4xvoSkTrs8uK16hk45wccazB-28pp9/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: "Ryan Wisnoski",  // or dynamic capture later
+      message: message
+    })
+  });
+
+  const data = await response.json();
+  return data.reply || "✅ Task submitted!";
 }
+
