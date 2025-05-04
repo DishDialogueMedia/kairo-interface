@@ -16,5 +16,25 @@
     </form>
   </div>
   <script src="main.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+<script>
+  // Your Firebase config
+  const firebaseConfig = {
+  apiKey: "AIzaSyAwRqINz2UdczHFXYUaYCEy9IxNqg2Wbvc",
+  authDomain: "dish-dialogue-kairo.firebaseapp.com",
+  projectId: "dish-dialogue-kairo",
+  storageBucket: "dish-dialogue-kairo.firebasestorage.app",
+  messagingSenderId: "922968714896",
+  appId: "1:922968714896:web:f65597065b310b4d047215"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+</script>
 </body>
 </html>
