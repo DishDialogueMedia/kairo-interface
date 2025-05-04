@@ -19,13 +19,14 @@
     import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
-      authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
-      projectId: "dish-dialogue-kairo-f54e2",
-      storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
-      messagingSenderId: "733841485241",
-      appId: "1:733841485241:web:292aee1cd489cd67729a68"
-    };
+  apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
+  authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
+  projectId: "dish-dialogue-kairo-f54e2",
+  storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
+  messagingSenderId: "733841485241",
+  appId: "1:733841485241:web:292aee1cd489cd67729a68"
+};
+
 
     const app = initializeApp(firebaseConfig);
     window.db = getFirestore(app);
