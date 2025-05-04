@@ -1,3 +1,4 @@
+// main.js
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chat = document.getElementById('chat-window');
@@ -39,17 +40,17 @@ async function fetchKairoResponse(message) {
 
     const data = await response.json();
 
-    if (window.db) {
-      const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js");
-      await addDoc(collection(window.db, "kairo_log"), {
+    // ✅ Log to Firestore
+    if (typeof db !== "undefined") {
+      await db.collection("kairo_log").add({
         user: "Ryan Wisnoski",
         message: message,
         response: data.reply,
-        timestamp: serverTimestamp()
+        timestamp: new Date()
       });
-      console.log("📝 Log entry written to Firestore");
+      console.log("📝 Logged to Firestore");
     } else {
-      console.warn("⚠️ Firestore not initialized");
+      console.warn("⚠️ Firestore is not initialized.");
     }
 
     return data.reply || "✅ Message submitted.";
