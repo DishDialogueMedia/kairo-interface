@@ -42,12 +42,13 @@ async function fetchKairoResponse(message) {
 
     // ✅ Log to Firestore
     if (typeof db !== "undefined") {
-      await db.collection("kairo_log").add({
-        user: "Ryan Wisnoski",
-        message: message,
-        response: data.reply,
-        timestamp: new Date()
-      });
+await addDoc(collection(db, "kairo_log"), {
+  user: "Ryan Wisnoski",
+  message: message,
+  response: data.reply,
+  timestamp: new Date()
+});
+
       console.log("📝 Logged to Firestore:", data);
     } else {
       console.warn("⚠️ Firestore is not initialized.");
