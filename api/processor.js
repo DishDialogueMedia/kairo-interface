@@ -4,6 +4,9 @@ import { getFirestore } from 'firebase-admin/firestore';
 let db;
 
 try {
+  // ✅ Log environment variable length to debug whether it's loaded
+  console.log("🌍 ENV GOOGLE_CREDENTIALS length:", process.env.GOOGLE_CREDENTIALS?.length || "undefined");
+
   const raw = process.env.GOOGLE_CREDENTIALS;
 
   if (!raw) {
