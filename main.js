@@ -1,9 +1,7 @@
-// DOM References
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chat = document.getElementById('chat-window');
 
-// Event: Form Submit
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const userMessage = input.value.trim();
@@ -19,7 +17,6 @@ form.addEventListener('submit', async (e) => {
   input.focus();
 });
 
-// Add message to chat window
 function appendMessage(sender, message) {
   const msgDiv = document.createElement('div');
   msgDiv.textContent = `${sender}: ${message}`;
@@ -27,7 +24,6 @@ function appendMessage(sender, message) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// Fetch from Apps Script via proxy and log to Firestore
 async function fetchKairoResponse(message) {
   try {
     const response = await fetch("/api/proxy", {
@@ -43,19 +39,22 @@ async function fetchKairoResponse(message) {
 
     const data = await response.json();
 
-    // Firestore logging
+    // ✅ Log to Firestore
     if (typeof db !== "undefined") {
-      await db.collection("kairo_log").add(console.log("Logging to Firestore...", {
-  user: "Ryan Wisnoski",
-  message,
-  response: data.reply,
-  timestamp: new Date()
-});
-{
-   return data.reply || "✅ Message submitted.";
+      await db.collection("kairo_log").add({
+        user: "Ryan Wisnoski",
+        message: message,
+        response: data.reply,
+        timestamp: new Date()
+      });
+      console.log("📝 Logged to Firestore:", data);
+    } else {
+      console.warn("⚠️ Firestore is not initialized.");
+    }
+
+    return data.reply || "✅ Message submitted.";
   } catch (error) {
     console.error("❌ Network error or backend unreachable:", error);
     return "⚠️ Network error. Kairo is unreachable right now.";
   }
 }
-console.log("Firestore db instance:", db);
