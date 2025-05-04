@@ -25,18 +25,23 @@ function appendMessage(sender, message) {
 }
 
 async function fetchKairoResponse(message) {
-  const response = await fetch("https://corsproxy.io/?https://script.google.com/macros/s/AKfycbw4vrALR03cyIx_78GT8HubKPa6QZP0stk-zo4xvoSkTrs8uK16hk45wccazB-28pp9/exec", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name: "Ryan Wisnoski",
-      message: message
-    })
-  });
+  try {
+    const response = await fetch("/api/proxy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: "Ryan Wisnoski",
+        message: message
+      })
+    });
 
-  const data = await response.json();
-  return data.reply || "✅ Task submitted!";
+    const data = await response.json();
+    console.log("✅ Response from Kairo (via proxy):", data);
+    return data.reply || "✅ Message submitted.";
+  } catch (error) {
+    console.error("❌ Proxy or network error:", error);
+    return "⚠️ Network error. Kairo is unreachable right now.";
+  }
 }
-
