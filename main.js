@@ -39,19 +39,17 @@ async function fetchKairoResponse(message) {
 
     const data = await response.json();
 
-    // ✅ Log to Firestore
-    if (typeof db !== "undefined") {
-      await db.collection("kairo_log")
-        console.log("Logging to Firestore...", {
-  user: "Ryan Wisnoski",
-  message: message
-  response: data.reply,
-  timestamp: new Date()
-});
-;
-      console.log("📝 Logged to Firestore:", data);
+    if (window.db) {
+      const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js");
+      await addDoc(collection(window.db, "kairo_log"), {
+        user: "Ryan Wisnoski",
+        message: message,
+        response: data.reply,
+        timestamp: serverTimestamp()
+      });
+      console.log("📝 Log entry written to Firestore");
     } else {
-      console.warn("⚠️ Firestore is not initialized.");
+      console.warn("⚠️ Firestore not initialized");
     }
 
     return data.reply || "✅ Message submitted.";
