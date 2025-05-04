@@ -41,8 +41,9 @@ async function fetchKairoResponse(message) {
     const data = await response.json();
 
     // ✅ Log to Firestore
-    if (typeof db !== "undefined") {
-      await db.collection("kairo_log").add({
+    if (window.kairoDB) {
+      const { db, collection, addDoc } = window.kairoDB;
+      await addDoc(collection(db, "kairo_log"), {
         user: "Ryan Wisnoski",
         message: message,
         response: data.reply,
@@ -50,7 +51,7 @@ async function fetchKairoResponse(message) {
       });
       console.log("📝 Logged to Firestore");
     } else {
-      console.warn("⚠️ Firestore is not initialized.");
+      console.warn("⚠️ Firestore not available.");
     }
 
     return data.reply || "✅ Message submitted.";
