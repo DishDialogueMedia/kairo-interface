@@ -42,7 +42,8 @@ async function fetchKairoResponse(message) {
 
     // ✅ Log to Firestore
     if (typeof db !== "undefined") {
-     await addDoc(collection(db, "kairo_log"), {
+  await db.collection("kairo_log").add({ ... });
+}
   user: "Ryan Wisnoski",
   message: message,
   response: data.reply,
