@@ -2,40 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kairo – Your AI Partner</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kairo Interface</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🤖 Kairo</h1>
-    <div id="chat-window"></div>
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required />
-      <button type="submit">Send</button>
-    </form>
-  </div>
-  <script src="main.js"></script>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+  <div id="chat-window"></div>
+  <form id="chat-form">
+    <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  <!-- Firebase SDK (must be before main.js) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
-    authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
-    projectId: "dish-dialogue-kairo-f54e2",
-    storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
-    messagingSenderId: "733841485241",
-    appId: "1:733841485241:web:292aee1cd489cd67729a68"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
+      authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
+      projectId: "dish-dialogue-kairo-f54e2",
+      storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
+      messagingSenderId: "733841485241",
+      appId: "1:733841485241:web:292aee1cd489cd67729a68"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  window.db = getFirestore(app);
-</script>
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app);
+    console.log("✅ Firebase initialized");
+  </script>
+
+  <!-- Main App Logic -->
+  <script src="main.js" type="module"></script>
 </body>
 </html>
