@@ -14,18 +14,22 @@
   </form>
 
   <!-- Firebase SDK (must be before main.js) -->
-  <const firebaseConfig = {
-    apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
-    authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
-    projectId: "dish-dialogue-kairo-f54e2",
-    storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
-    messagingSenderId: "733841485241",
-    appId: "1:733841485241:web:292aee1cd489cd67729a68"
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "dish-dialogue-kairo.firebaseapp.com",
+      projectId: "dish-dialogue-kairo",
+      storageBucket: "dish-dialogue-kairo.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
     window.db = getFirestore(app);
-    console.log("✅ Firebase initialized");>
+    console.log("✅ Firebase initialized");
   </script>
 
   <!-- Main App Logic -->
