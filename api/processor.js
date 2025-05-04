@@ -1,55 +1,46 @@
-// api/processor.js
-
 import admin from "firebase-admin";
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
+const serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
   });
 }
 
 const db = admin.firestore();
 
-// 🧠 Simulated processor logic
-function generateResponse(input) {
-  return `[Simulated Kairo response to: "${input}"]`;
-}
-
 export default async function handler(req, res) {
   try {
-    const snapshot = await db
-      .collection("kairo_log")
-      .where("status", "==", "pending")
-      .get();
+    const tasksRef = db.collection("kairo_tasks");
+    const snapshot = await tasksRef.where("status", "==", "pending").get();
 
     if (snapshot.empty) {
       return res.status(200).json({ message: "No pending tasks." });
     }
 
-    let processed = 0;
+    let processedCount = 0;
 
     for (const doc of snapshot.docs) {
-      const data = doc.data();
-      const input = data.message || "(no message)";
-      const result = generateResponse(input);
+      const task = doc.data();
+      const taskId = doc.id;
 
-      await doc.ref.update({
-        response: result,
-        result,
+      // Simulated processing logic
+      console.log(`🛠️ Processing task: ${taskId} →`, task);
+
+      // Update status to complete
+      await tasksRef.doc(taskId).update({
         status: "complete",
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
+        completedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      processed++;
+      processedCount++;
     }
 
-    return res.status(200).json({
-      message: `✅ Successfully processed ${processed} task(s).`
-    });
+    return res.status(200).json({ message: `✅ Processed ${processedCount} task(s).` });
+
   } catch (error) {
-    console.error("❌ Processor failed:", error);
+    console.error("❌ Processor error:", error);
     return res.status(500).json({ error: "Internal Server Error", detail: error.message });
   }
 }
