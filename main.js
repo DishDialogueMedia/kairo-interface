@@ -11,7 +11,7 @@ form.addEventListener('submit', async (e) => {
   input.value = '';
   input.disabled = true;
 
-  const response = await fetchKairoResponse(async function fetchKairoResponse(message) {
+  const response = await async function fetchKairoResponse(message) {
   try {
     const response = await fetch("/api/proxy", {
       method: "POST",
@@ -41,37 +41,7 @@ form.addEventListener('submit', async (e) => {
     return "⚠️ Network error. Kairo is unreachable right now.";
   }
 }
-);
-  appendMessage('Kairo', response);
-  input.disabled = false;
-  input.focus();
-});
 
-function appendMessage(sender, message) {
-  const msgDiv = document.createElement('div');
-  msgDiv.textContent = `${sender}: ${message}`;
-  chat.appendChild(msgDiv);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-async function fetchKairoResponse(message) {
-  try {
-    const response = await fetch("/api/proxy", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: "Ryan Wisnoski",
-        message: message
-      })
-    });
-
-    const data = await response.json();
-    console.log("✅ Response from Kairo (via proxy):", data);
-    return data.reply || "✅ Message submitted.";
-  } catch (error) {
-    console.error("❌ Proxy or network error:", error);
     return "⚠️ Network error. Kairo is unreachable right now.";
   }
 }
