@@ -1,41 +1,28 @@
 // api/processor.js
 
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  doc,
-  Timestamp
-} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import admin from "firebase-admin";
 
-// ✅ Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
-  authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
-  projectId: "dish-dialogue-kairo-f54e2",
-  storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
-  messagingSenderId: "733841485241",
-  appId: "1:733841485241:web:292aee1cd489cd67729a68"
-};
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
 
-// 🧠 Simple simulated processor (replace with real logic)
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+}
+
+const db = admin.firestore();
+
+// 🧠 Simulated processor logic
 function generateResponse(input) {
   return `[Simulated Kairo response to: "${input}"]`;
 }
 
 export default async function handler(req, res) {
   try {
-    // ✅ Initialize Firebase only once
-    if (getApps().length === 0) initializeApp(firebaseConfig);
-    const db = getFirestore();
-
-    // 🔍 Get all pending tasks
-    const q = query(collection(db, "kairo_log"), where("status", "==", "pending"));
-    const snapshot = await getDocs(q);
+    const snapshot = await db
+      .collection("kairo_log")
+      .where("status", "==", "pending")
+      .get();
 
     if (snapshot.empty) {
       return res.status(200).json({ message: "No pending tasks." });
@@ -43,24 +30,26 @@ export default async function handler(req, res) {
 
     let processed = 0;
 
-    for (const docSnap of snapshot.docs) {
-      const data = docSnap.data();
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
       const input = data.message || "(no message)";
       const result = generateResponse(input);
 
-      await updateDoc(doc(db, "kairo_log", docSnap.id), {
+      await doc.ref.update({
         response: result,
         result,
         status: "complete",
-        completedAt: Timestamp.now()
+        completedAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
       processed++;
     }
 
-    res.status(200).json({ message: `✅ Processed ${processed} task(s).` });
+    return res.status(200).json({
+      message: `✅ Successfully processed ${processed} task(s).`
+    });
   } catch (error) {
-    console.error("❌ Processor error:", error);
-    res.status(500).json({ error: "Processor failed", detail: error.message });
+    console.error("❌ Processor failed:", error);
+    return res.status(500).json({ error: "Internal Server Error", detail: error.message });
   }
 }
