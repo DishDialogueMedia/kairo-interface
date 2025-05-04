@@ -1,0 +1,14 @@
+{
+  "name": "kairo-interface",
+  "version": "1.0.0",
+  "description": "Kairo Assistant interface with Firestore processing",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.10.1"
+  }
+}
