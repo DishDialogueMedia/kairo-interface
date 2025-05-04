@@ -1,4 +1,4 @@
-// DOM References
+console.log("Firestore db instance:", db);
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chat = document.getElementById('chat-window');
@@ -45,13 +45,15 @@ async function fetchKairoResponse(message) {
 
     // Firestore logging
     if (typeof db !== "undefined") {
-  await db.collection("kairo_log").add({ ... });
-}
-        user: "Ryan Wisnoski",
-        message: message,
-        response: data.reply,
-        timestamp: new Date()
-      });
+  await db.collection("kairo_log")
+    console.log("Logging to Firestore...", {
+  user: "Ryan Wisnoski",
+  message: message,
+  response: data.reply,
+  timestamp: new Date()
+});
+;
+}};
     }
 
     return data.reply || "✅ Message submitted.";
