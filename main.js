@@ -52,8 +52,6 @@ async function fetchKairoResponse(message) {
         response: data.reply,
         timestamp: new Date()
       });
-    }
-
     return data.reply || "✅ Message submitted.";
   } catch (error) {
     console.error("❌ Network error or backend unreachable:", error);
