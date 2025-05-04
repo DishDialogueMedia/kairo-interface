@@ -47,7 +47,6 @@ async function fetchKairoResponse(message) {
     console.log("Firestore db instance:", db);
     if (typeof db !== "undefined") {
   await db.collection("kairo_log").add({ ... });
-}
         user: "Ryan Wisnoski",
         message: message,
         response: data.reply,
