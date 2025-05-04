@@ -7,18 +7,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <div id="chat-window"></div>
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
-      <button type="submit">Send</button>
-    </form>
-  </div>
+  <div id="chat-window"></div>
+  <form id="chat-form">
+    <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
 
-  <!-- Firebase SDK and Initialization -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
@@ -31,11 +29,12 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    window.db = db;
+    window.kairoDB = { db, collection, addDoc };
+
     console.log("✅ Firebase initialized");
   </script>
 
   <!-- Main App Logic -->
-  <script type="module" src="main.js"></script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>
