@@ -4,19 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kairo Interface</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div id="chat-window"></div>
-  <form id="chat-form">
-    <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
-    <button type="submit">Send</button>
-  </form>
-
-  <!-- Firebase SDK -->
+  <link rel="stylesheet" href="style.css" />
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
@@ -28,13 +19,17 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.kairoDB = { db, collection, addDoc };
-
+    window.db = getFirestore(app);
     console.log("✅ Firebase initialized");
   </script>
+</head>
+<body>
+  <div id="chat-window"></div>
+  <form id="chat-form">
+    <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
 
-  <!-- Main App Logic -->
-  <script src="main.js" type="module"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
