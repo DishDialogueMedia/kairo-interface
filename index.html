@@ -7,29 +7,35 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="chat-window"></div>
-  <form id="chat-form">
-    <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
-    <button type="submit">Send</button>
-  </form>
+  <div class="container">
+    <div id="chat-window"></div>
+    <form id="chat-form">
+      <input type="text" id="user-input" placeholder="Type your message…" autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
 
-  <!-- Firebase SDK (must be before main.js) -->
-    const firebaseConfig = {
-    apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
-    authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
-    projectId: "dish-dialogue-kairo-f54e2",
-    storageBucket: "dish-dialogue-kairo-f54e2.firebasestorage.app",
-    messagingSenderId: "733841485241",
-    appId: "1:733841485241:web:292aee1cd489cd67729a68"
-  };
+  <!-- Firebase SDK and Initialization -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
+      authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
+      projectId: "dish-dialogue-kairo-f54e2",
+      storageBucket: "dish-dialogue-kairo-f54e2.appspot.com",
+      messagingSenderId: "733841485241",
+      appId: "1:733841485241:web:292aee1cd489cd67729a68"
+    };
+
     const app = initializeApp(firebaseConfig);
-    window.db = getFirestore(app);
+    const db = getFirestore(app);
+    window.db = db;
     console.log("✅ Firebase initialized");
   </script>
 
   <!-- Main App Logic -->
-  <script src="main.js" type="module"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
