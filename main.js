@@ -48,7 +48,7 @@ async function fetchKairoResponse(message) {
   message: message,
   response: data.reply,
   timestamp: new Date()
-;})  
+;}})  
     console.log("📝 Logged to Firestore:", data);;
 }
     } else {
