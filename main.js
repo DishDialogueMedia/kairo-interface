@@ -59,3 +59,4 @@ async function fetchKairoResponse(message) {
     return "⚠️ Network error. Kairo is unreachable right now.";
   }
 }
+console.log("Firestore db instance:", db);
