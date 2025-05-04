@@ -45,7 +45,13 @@ async function fetchKairoResponse(message) {
 
     // Firestore logging
     if (typeof db !== "undefined") {
-      await db.collection("kairo_log").add({
+      await db.collection("kairo_log").add(console.log("Logging to Firestore...", {
+  user: "Ryan Wisnoski",
+  message,
+  response: data.reply,
+  timestamp: new Date()
+});
+{
         user: "Ryan Wisnoski",
         message: message,
         response: data.reply,
