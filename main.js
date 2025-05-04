@@ -1,4 +1,3 @@
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chat = document.getElementById('chat-window');
@@ -42,12 +41,12 @@ async function fetchKairoResponse(message) {
 
     // ✅ Log to Firestore
     if (typeof db !== "undefined") {
-      await addDoc(collection(db, "kairo_log"), {
-  user: "Ryan Wisnoski",
-  message: message,
-  response: data.reply,
-  timestamp: new Date()
-});
+      await db.collection("kairo_log").add({
+        user: "Ryan Wisnoski",
+        message: message,
+        response: data.reply,
+        timestamp: new Date()
+      });
       console.log("📝 Logged to Firestore:", data);
     } else {
       console.warn("⚠️ Firestore is not initialized.");
