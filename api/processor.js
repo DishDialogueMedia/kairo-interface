@@ -1,46 +1,45 @@
-import admin from "firebase-admin";
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
-const serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+try {
+  const serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+  // 🔍 DEBUG: Log key prefix to verify formatting
+  console.log("🔐 Key preview:", serviceAccount.private_key.substring(0, 80));
 
-const db = admin.firestore();
+  if (!getApps().length) {
+    initializeApp({
+      credential: cert(serviceAccount),
+    });
+  }
 
-export default async function handler(req, res) {
-  try {
-    const tasksRef = db.collection("kairo_tasks");
-    const snapshot = await tasksRef.where("status", "==", "pending").get();
+  const db = getFirestore();
 
-    if (snapshot.empty) {
-      return res.status(200).json({ message: "No pending tasks." });
-    }
+  export default async function handler(req, res) {
+    try {
+      const snapshot = await db.collection('task_queue').get();
 
-    let processedCount = 0;
+      if (snapshot.empty) {
+        return res.status(200).json({ message: "No pending tasks." });
+      }
 
-    for (const doc of snapshot.docs) {
-      const task = doc.data();
-      const taskId = doc.id;
-
-      // Simulated processing logic
-      console.log(`🛠️ Processing task: ${taskId} →`, task);
-
-      // Update status to complete
-      await tasksRef.doc(taskId).update({
-        status: "complete",
-        completedAt: admin.firestore.FieldValue.serverTimestamp(),
+      const tasks = [];
+      snapshot.forEach(doc => {
+        tasks.push({ id: doc.id, ...doc.data() });
       });
 
-      processedCount++;
+      // Processed tasks
+      return res.status(200).json({ message: "Tasks fetched.", tasks });
+    } catch (error) {
+      console.error("🔥 Handler error:", error);
+      return res.status(500).json({ error: error.message });
     }
+  };
 
-    return res.status(200).json({ message: `✅ Processed ${processedCount} task(s).` });
-
-  } catch (error) {
-    console.error("❌ Processor error:", error);
-    return res.status(500).json({ error: "Internal Server Error", detail: error.message });
+} catch (error) {
+  console.error("❌ Firebase Init Error:", error);
+  // Still export the handler to avoid deploy crash
+  export default function handler(req, res) {
+    return res.status(500).json({ error: "Firebase initialization failed." });
   }
 }
