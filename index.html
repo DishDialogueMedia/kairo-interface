@@ -21,8 +21,10 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 
-<script>
-  // Your Firebase config
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
     authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
@@ -32,9 +34,8 @@
     appId: "1:733841485241:web:292aee1cd489cd67729a68"
   };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+  const app = initializeApp(firebaseConfig);
+  window.db = getFirestore(app);
 </script>
 </body>
 </html>
