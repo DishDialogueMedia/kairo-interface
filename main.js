@@ -44,14 +44,15 @@ async function fetchKairoResponse(message) {
     const data = await response.json();
 
     // Firestore logging
-    console.log("Firestore db instance:", db);
     if (typeof db !== "undefined") {
-  await db.collection("kairo_log").add({ ... });
+      await db.collection("kairo_log").add({
         user: "Ryan Wisnoski",
         message: message,
         response: data.reply,
         timestamp: new Date()
       });
+    }
+
     return data.reply || "✅ Message submitted.";
   } catch (error) {
     console.error("❌ Network error or backend unreachable:", error);
