@@ -52,14 +52,7 @@ async function fetchKairoResponse(message) {
   timestamp: new Date()
 });
 {
-        user: "Ryan Wisnoski",
-        message: message,
-        response: data.reply,
-        timestamp: new Date()
-      });
-    }
-
-    return data.reply || "✅ Message submitted.";
+   return data.reply || "✅ Message submitted.";
   } catch (error) {
     console.error("❌ Network error or backend unreachable:", error);
     return "⚠️ Network error. Kairo is unreachable right now.";
