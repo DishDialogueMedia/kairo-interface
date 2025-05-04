@@ -1,20 +1,3 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
-  authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
-  projectId: "dish-dialogue-kairo-f54e2",
-  storageBucket: "dish-dialogue-kairo-f54e2.appspot.com",
-  messagingSenderId: "733841485241",
-  appId: "1:733841485241:web:292aee1cd489cd67729a68"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chat = document.getElementById('chat-window');
@@ -56,17 +39,24 @@ async function fetchKairoResponse(message) {
 
     const data = await response.json();
 
-    await addDoc(collection(db, "kairo_log"), {
-      user: "Ryan Wisnoski",
-      message: message,
-      response: data.reply,
-      timestamp: new Date()
-    });
+    if (typeof db !== "undefined") {
+      const { collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js");
 
-    console.log("📝 Logged to Firestore:", data);
+      await addDoc(collection(db, "kairo_log"), {
+        user: "Ryan Wisnoski",
+        message: message,
+        response: data.reply,
+        timestamp: Timestamp.now()
+      });
+
+      console.log("📝 Logged to Firestore:", data);
+    } else {
+      console.warn("⚠️ Firestore is not initialized.");
+    }
+
     return data.reply || "✅ Message submitted.";
   } catch (error) {
-    console.error("❌ Network error:", error);
-    return "⚠️ Kairo is unreachable.";
+    console.error("❌ Network error or backend unreachable:", error);
+    return "⚠️ Network error. Kairo is unreachable right now.";
   }
 }
