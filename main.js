@@ -36,10 +36,7 @@ async function fetchKairoResponse(message) {
         message: message
       })
     });
-
-    const data = await response.json();
-
-    // ✅ Log to Firestore
+// ✅ Log to Firestore
     if (typeof db !== "undefined") {
       await db.collection("kairo_log")
         console.log("Logging to Firestore...", {
