@@ -2,6 +2,9 @@ const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chat = document.getElementById('chat-window');
 
+// Make db accessible from window
+const db = window.db;
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const userMessage = input.value.trim();
@@ -39,8 +42,13 @@ async function fetchKairoResponse(message) {
 
     const data = await response.json();
 
-    if (typeof db !== "undefined") {
+    try {
       const { collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js");
+
+      if (!db) {
+        console.warn("⚠️ Firestore not initialized properly.");
+        return data.reply || "Message sent but not logged.";
+      }
 
       await addDoc(collection(db, "kairo_log"), {
         user: "Ryan Wisnoski",
@@ -49,9 +57,10 @@ async function fetchKairoResponse(message) {
         timestamp: Timestamp.now()
       });
 
-      console.log("📝 Logged to Firestore:", data);
-    } else {
-      console.warn("⚠️ Firestore is not initialized.");
+      console.log("📝 Logged to Firestore:", { message, response: data.reply });
+
+    } catch (firestoreError) {
+      console.error("❌ Firestore logging failed:", firestoreError);
     }
 
     return data.reply || "✅ Message submitted.";
