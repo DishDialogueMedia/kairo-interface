@@ -44,6 +44,7 @@ async function fetchKairoResponse(message) {
     const data = await response.json();
 
     // Firestore logging
+    console.log("Firestore db instance:", db);
     if (typeof db !== "undefined") {
   await db.collection("kairo_log").add({ ... });
 }
