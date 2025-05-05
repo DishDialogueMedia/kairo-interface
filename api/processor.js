@@ -4,24 +4,32 @@ import { getFirestore } from 'firebase-admin/firestore';
 let db;
 
 try {
-  // Rebuild service account object from separate Vercel environment variables
-  const serviceAccount = {
-    type: process.env.TYPE,
-    project_id: process.env.PROJECT_ID,
-    private_key_id: process.env.PRIVATE_KEY_ID,
-    private_key: process.env.PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    client_email: process.env.CLIENT_EMAIL,
-    client_id: process.env.CLIENT_ID,
-    auth_uri: process.env.AUTH_URI,
-    token_uri: process.env.TOKEN_URI,
-    auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
-    client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
-    universe_domain: process.env.UNIVERSE_DOMAIN,
-  };
+  const raw = process.env.GOOGLE_CREDENTIALS;
 
-  // Validate critical fields
+  console.log("🌐 RAW GOOGLE_CREDENTIALS:", raw?.substring(0, 200)); // Preview only
+
+  if (!raw) {
+    console.error("❌ GOOGLE_CREDENTIALS is missing or empty.");
+    throw new Error("Missing GOOGLE_CREDENTIALS.");
+  }
+
+  let serviceAccount;
+  try {
+    serviceAccount = JSON.parse(raw);
+  } catch (parseError) {
+    console.error("❌ Failed to parse GOOGLE_CREDENTIALS:", parseError.message);
+    throw parseError;
+  }
+
+  console.log("🧪 Parsed Fields:", {
+    project_id: serviceAccount.project_id,
+    private_key_length: serviceAccount.private_key?.length,
+    client_email: serviceAccount.client_email
+  });
+
   if (!serviceAccount.private_key || !serviceAccount.project_id) {
-    throw new Error("❌ Missing required Firebase credential fields.");
+    console.error("❌ GOOGLE_CREDENTIALS is missing required fields.");
+    throw new Error("Incomplete service account object.");
   }
 
   if (!getApps().length) {
