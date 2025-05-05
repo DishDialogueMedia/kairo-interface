@@ -1,70 +1,47 @@
-const form = document.getElementById('chat-form');
-const input = document.getElementById('user-input');
-const chat = document.getElementById('chat-window');
-const db = window.db;
+// main.js — Writes tasks to Firestore 'task_queue' and logs success
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const userMessage = input.value.trim();
-  if (!userMessage) return;
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-  appendMessage('You', userMessage);
-  input.value = '';
-  input.disabled = true;
+const firebaseConfig = {
+  // 🔁 Replace with your actual Firebase config
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "dish-dialogue-kairo-f54e2",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-  const reply = await fetchKairoResponse(userMessage);
-  appendMessage('Kairo', reply);
-  input.disabled = false;
-  input.focus();
-});
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-function appendMessage(sender, message) {
-  const msgDiv = document.createElement('div');
-  msgDiv.textContent = `${sender}: ${message}`;
-  chat.appendChild(msgDiv);
-  chat.scrollTop = chat.scrollHeight;
-}
+document.getElementById("submit-button").addEventListener("click", async () => {
+  const taskInput = document.getElementById("task-input").value.trim();
 
-async function fetchKairoResponse(message) {
-  try {
-    const response = await fetch("/api/proxy", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: "Ryan Wisnoski",
-        message: message
-      })
-    });
-
-    const data = await response.json();
-
-    try {
-      const { collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js");
-
-      if (!db) {
-        console.warn("⚠️ Firestore not initialized.");
-        return data.reply || "Message sent but not logged.";
-      }
-
-      await addDoc(collection(db, "kairo_log"), {
-        user: "Ryan Wisnoski",
-        message: message,
-        response: data.reply,
-        timestamp: Timestamp.now(),
-        status: "complete"
-      });
-
-      console.log("📝 Logged to Firestore:", { message, response: data.reply });
-
-    } catch (firestoreError) {
-      console.error("❌ Firestore logging failed:", firestoreError);
-    }
-
-    return data.reply || "✅ Message submitted.";
-  } catch (error) {
-    console.error("❌ Network error or backend unreachable:", error);
-    return "⚠️ Network error. Kairo is unreachable right now.";
+  if (!taskInput) {
+    alert("Please enter a task.");
+    return;
   }
-}
+
+  const taskData = {
+    id: taskInput,
+    type: "test-trigger",
+    description: `Manual task to verify processor function`,
+    status: "pending",
+    created_at: serverTimestamp(),
+    details: {
+      initiated_by: "manual",
+      purpose: "test"
+    }
+  };
+
+  try {
+    await addDoc(collection(db, "task_queue"), taskData);
+    console.log("✅ Task submitted:", taskData);
+    alert(`✅ Task "${taskInput}" submitted to Firestore`);
+  } catch (error) {
+    console.error("❌ Error writing task:", error);
+    alert("❌ Failed to submit task. See console for details.");
+  }
+});
