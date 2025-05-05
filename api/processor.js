@@ -1,3 +1,5 @@
+// api/processor.js
+
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
@@ -6,10 +8,8 @@ let db;
 try {
   const raw = process.env.GOOGLE_CREDENTIALS;
 
-  console.log("🌐 RAW GOOGLE_CREDENTIALS:", raw?.substring(0, 200)); // Preview only
-
   if (!raw) {
-    console.error("❌ GOOGLE_CREDENTIALS is missing or empty.");
+    console.error("❌ Missing GOOGLE_CREDENTIALS environment variable.");
     throw new Error("Missing GOOGLE_CREDENTIALS.");
   }
 
@@ -21,12 +21,6 @@ try {
     throw parseError;
   }
 
-  console.log("🧪 Parsed Fields:", {
-    project_id: serviceAccount.project_id,
-    private_key_length: serviceAccount.private_key?.length,
-    client_email: serviceAccount.client_email
-  });
-
   if (!serviceAccount.private_key || !serviceAccount.project_id) {
     console.error("❌ GOOGLE_CREDENTIALS is missing required fields.");
     throw new Error("Incomplete service account object.");
@@ -36,7 +30,7 @@ try {
     initializeApp({
       credential: cert(serviceAccount),
     });
-    console.log("✅ Firebase initialized");
+    console.log("✅ Firebase initialized.");
   }
 
   db = getFirestore();
@@ -45,6 +39,7 @@ try {
   console.error("❌ Firebase initialization failed:", error.message);
 }
 
+// ✅ Request handler
 export default async function handler(req, res) {
   if (!db) {
     return res.status(500).json({ error: "Firebase not initialized." });
