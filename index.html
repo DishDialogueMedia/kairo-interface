@@ -11,7 +11,6 @@
   <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
   <script>
-    // ✅ Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
       authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
@@ -21,11 +20,9 @@
       appId: "1:733841485241:web:292aee1cd489cd67729a68"
     };
 
-    // ✅ Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ✅ Submit Task to Firestore
     async function submitTask() {
       const input = document.getElementById("task-input").value.trim();
       if (!input) {
@@ -48,9 +45,9 @@
       try {
         await db.collection("task_queue").add(task);
         alert(`✅ Task "${input}" submitted to Firestore.`);
-        console.log("Task added:", task);
+        console.log("✅ Firestore write succeeded:", task);
       } catch (e) {
-        console.error("❌ Error writing to Firestore:", e);
+        console.error("❌ Firestore write failed:", e);
         alert("❌ Failed to submit task.");
       }
     }
