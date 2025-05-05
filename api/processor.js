@@ -1,11 +1,9 @@
-// processor.js — Updated to use 'task_queue' collection
+// processor.js — Firestore update fully verified version
 
 const admin = require("firebase-admin");
 
-// Parse service account from environment variable
 const serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-// Initialize Firebase Admin SDK once
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -26,6 +24,7 @@ module.exports = async (req, res) => {
 
     const taskDoc = snapshot.docs[0];
     const taskData = taskDoc.data();
+    const taskId = taskDoc.id;
 
     console.log("🔄 Starting task:", taskData);
 
@@ -35,17 +34,21 @@ module.exports = async (req, res) => {
       startedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    // Step 2: Simulate processing (2 seconds)
+    // Simulate processing delay
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Step 3: Mark as done
+    // Step 2: Mark as done
     await taskDoc.ref.update({
       status: "done",
       completedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
     console.log("✅ Task completed:", taskData);
-    return res.status(200).json({ message: "Task processed", task: taskData });
+    return res.status(200).json({
+      message: "Task processed",
+      taskId: taskId,
+      original: taskData
+    });
 
   } catch (error) {
     console.error("❌ Error processing task:", error);
