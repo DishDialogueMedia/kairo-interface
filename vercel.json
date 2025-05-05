@@ -6,15 +6,5 @@
     "api/processor.js": {
       "runtime": "nodejs18.x"
     }
-  },
-  "cron": [
-    {
-      "path": "/api/runner",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/processor",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  }
 }
