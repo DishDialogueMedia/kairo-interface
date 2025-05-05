@@ -1,66 +1,54 @@
-// api/processor.js
+// processor.js — Updated to use 'task_queue' collection
 
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+const admin = require("firebase-admin");
 
-let db;
+// Parse service account from environment variable
+const serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-try {
-  const raw = process.env.GOOGLE_CREDENTIALS;
-
-  if (!raw) {
-    console.error("❌ Missing GOOGLE_CREDENTIALS environment variable.");
-    throw new Error("Missing GOOGLE_CREDENTIALS.");
-  }
-
-  let serviceAccount;
-  try {
-    serviceAccount = JSON.parse(raw);
-  } catch (parseError) {
-    console.error("❌ Failed to parse GOOGLE_CREDENTIALS:", parseError.message);
-    throw parseError;
-  }
-
-  if (!serviceAccount.private_key || !serviceAccount.project_id) {
-    console.error("❌ GOOGLE_CREDENTIALS is missing required fields.");
-    throw new Error("Incomplete service account object.");
-  }
-
-  if (!getApps().length) {
-    initializeApp({
-      credential: cert(serviceAccount),
-    });
-    console.log("✅ Firebase initialized.");
-  }
-
-  db = getFirestore();
-
-} catch (error) {
-  console.error("❌ Firebase initialization failed:", error.message);
+// Initialize Firebase Admin SDK once
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
 }
 
-// ✅ Request handler
-export default async function handler(req, res) {
-  if (!db) {
-    return res.status(500).json({ error: "Firebase not initialized." });
-  }
+const db = admin.firestore();
 
+module.exports = async (req, res) => {
   try {
-    const snapshot = await db.collection('task_queue').get();
+    const queueRef = db.collection("task_queue");
+    const snapshot = await queueRef.where("status", "==", "pending").limit(1).get();
 
     if (snapshot.empty) {
-      return res.status(200).json({ message: "No pending tasks." });
+      console.log("🟡 No pending tasks found.");
+      return res.status(200).json({ message: "No tasks to process" });
     }
 
-    const tasks = [];
-    snapshot.forEach(doc => {
-      tasks.push({ id: doc.id, ...doc.data() });
+    const taskDoc = snapshot.docs[0];
+    const taskData = taskDoc.data();
+
+    console.log("🔄 Starting task:", taskData);
+
+    // Step 1: Mark as in_progress
+    await taskDoc.ref.update({
+      status: "in_progress",
+      startedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return res.status(200).json({ message: "Tasks fetched.", tasks });
+    // Step 2: Simulate processing (2 seconds)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Step 3: Mark as done
+    await taskDoc.ref.update({
+      status: "done",
+      completedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    console.log("✅ Task completed:", taskData);
+    return res.status(200).json({ message: "Task processed", task: taskData });
 
   } catch (error) {
-    console.error("🔥 Handler error:", error.message);
+    console.error("❌ Error processing task:", error);
     return res.status(500).json({ error: error.message });
   }
-}
+};
