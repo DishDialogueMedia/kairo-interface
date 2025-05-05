@@ -1,10 +1,8 @@
 {
-  "functions": {
-    "api/runner.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/processor.js": {
-      "runtime": "nodejs18.x"
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "*/5 * * * *"
     }
-  }
+  ]
 }
