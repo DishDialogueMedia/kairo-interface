@@ -4,31 +4,25 @@ import { getFirestore } from 'firebase-admin/firestore';
 let db;
 
 try {
-  // ✅ Log environment variable length to debug whether it's loaded
-  console.log("🌍 ENV GOOGLE_CREDENTIALS length:", process.env.GOOGLE_CREDENTIALS?.length || "undefined");
+  // Rebuild service account object from separate Vercel environment variables
+  const serviceAccount = {
+    type: process.env.TYPE,
+    project_id: process.env.PROJECT_ID,
+    private_key_id: process.env.PRIVATE_KEY_ID,
+    private_key: process.env.PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    client_email: process.env.CLIENT_EMAIL,
+    client_id: process.env.CLIENT_ID,
+    auth_uri: process.env.AUTH_URI,
+    token_uri: process.env.TOKEN_URI,
+    auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
+    client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
+    universe_domain: process.env.UNIVERSE_DOMAIN,
+  };
 
-  const raw = process.env.GOOGLE_CREDENTIALS;
-
-  if (!raw) {
-    console.error("❌ GOOGLE_CREDENTIALS is missing or empty.");
-    throw new Error("Missing GOOGLE_CREDENTIALS.");
-  }
-
-  let serviceAccount;
-  try {
-    serviceAccount = JSON.parse(raw);
-  } catch (parseError) {
-    console.error("❌ Failed to parse GOOGLE_CREDENTIALS:", parseError.message);
-    throw parseError;
-  }
-
+  // Validate critical fields
   if (!serviceAccount.private_key || !serviceAccount.project_id) {
-    console.error("❌ GOOGLE_CREDENTIALS is missing required fields.");
-    throw new Error("Incomplete service account object.");
+    throw new Error("❌ Missing required Firebase credential fields.");
   }
-
-  // 🔍 Log a preview of the key formatting
-  console.log("🔐 Key preview:", serviceAccount.private_key.substring(0, 80));
 
   if (!getApps().length) {
     initializeApp({
@@ -43,7 +37,6 @@ try {
   console.error("❌ Firebase initialization failed:", error.message);
 }
 
-// ✅ Handler export — stays separate and always available
 export default async function handler(req, res) {
   if (!db) {
     return res.status(500).json({ error: "Firebase not initialized." });
