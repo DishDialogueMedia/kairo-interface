@@ -1,0 +1,10 @@
+[
+  {
+    "path": "/api/runner",
+    "schedule": "*/5 * * * *"
+  },
+  {
+    "path": "/api/processor",
+    "schedule": "*/5 * * * *"
+  }
+]
