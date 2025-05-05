@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kairo Task Submit</title>
+</head>
+<body>
+  <h2>Submit a Task to Kairo</h2>
+  <input type="text" id="task-input" placeholder="Enter task ID..." />
+  <button onclick="submitTask()">Submit Task</button>
 
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmLHI1qAd-FAAGG3pzNvc4MgWDC7pozGU",
+      authDomain: "dish-dialogue-kairo-f54e2.firebaseapp.com",
+      projectId: "dish-dialogue-kairo-f54e2",
+      storageBucket: "dish-dialogue-kairo-f54e2.appspot.com",
+      messagingSenderId: "733841485241",
+      appId: "1:733841485241:web:292aee1cd489cd67729a68"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function submitTask() {
+      const input = document.getElementById("task-input").value.trim();
+      if (!input) {
+        alert("❌ Please enter a task ID.");
+        return;
+      }
+
+      const task = {
+        id: input,
+        type: "test-trigger",
+        description: "Manual task to verify processor function",
+        status: "pending",
+        created_at: firebase.firestore.FieldValue.serverTimestamp(),
+        details: {
+          initiated_by: "manual",
+          purpose: "test"
+        }
+      };
+
+      try {
+        await db.collection("task_queue").add(task);
+        alert(`✅ Task "${input}" submitted to Firestore.`);
+        console.log("✅ Firestore write succeeded:", task);
+      } catch (e) {
+        console.error("❌ Firestore write failed:", e);
+        alert("❌ Failed to submit task.");
+      }
+    }
+  </script>
+</body>
+</html>
